@@ -16,30 +16,39 @@ public class WaterLogController {
     @Autowired
     private JdbcTemplate jdbc;
 
-    // ✅ CREATE
+    // Create new water log with username
     @PostMapping("/log")
     public ResponseEntity<String> logWater(@RequestBody Map<String, Object> body) {
-        int amount = (int) body.get("amount");
-        jdbc.update("INSERT INTO water_logs (amount, timestamp) VALUES (?, NOW())", amount);
+        String username = (String) body.get("username");
+        Integer amount = (Integer) body.get("amount");
+        if (username == null || amount == null) {
+            return ResponseEntity.badRequest().body("Missing username or amount");
+        }
+
+        jdbc.update("INSERT INTO water_logs (username, amount, timestamp) VALUES (?, ?, NOW())", username, amount);
         return ResponseEntity.ok("Water logged.");
     }
 
-    // ✅ READ
-    @GetMapping("/logs")
-    public ResponseEntity<List<Map<String, Object>>> getLogs() {
-        List<Map<String, Object>> logs = jdbc.queryForList("SELECT * FROM water_logs ORDER BY id DESC");
+    // Read all water logs for a given user
+    @GetMapping("/logs/{username}")
+    public ResponseEntity<List<Map<String, Object>>> getLogs(@PathVariable String username) {
+        List<Map<String, Object>> logs = jdbc.queryForList(
+            "SELECT * FROM water_logs WHERE username = ? ORDER BY id DESC", username);
         return ResponseEntity.ok(logs);
     }
 
-    // ✅ UPDATE
+    // Update a water log by id
     @PutMapping("/log/{id}")
     public ResponseEntity<String> updateLog(@PathVariable int id, @RequestBody Map<String, Object> body) {
-        int amount = (int) body.get("amount");
+        Integer amount = (Integer) body.get("amount");
+        if (amount == null) {
+            return ResponseEntity.badRequest().body("Missing amount");
+        }
         jdbc.update("UPDATE water_logs SET amount = ? WHERE id = ?", amount, id);
         return ResponseEntity.ok("Water log updated.");
     }
 
-    // ✅ DELETE
+    // Delete a water log by id
     @DeleteMapping("/log/{id}")
     public ResponseEntity<String> deleteLog(@PathVariable int id) {
         jdbc.update("DELETE FROM water_logs WHERE id = ?", id);

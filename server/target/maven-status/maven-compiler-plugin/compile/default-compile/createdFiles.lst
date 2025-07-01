@@ -1,9 +1,12 @@
-controller\JdbcTemplate.class
-controller\RequestMapping.class
+com\example\water\controller\WaterLogController.class
 controller\CrossOrigin.class
-com\example\water\WaterReminderApplication.class
 controller\Autowired.class
 controller\PostMapping.class
 controller\ResponseEntity.class
 controller\RestController.class
+com\example\water\WebConfig.class
+controller\JdbcTemplate.class
+controller\RequestMapping.class
+com\example\water\controller\UserController.class
+com\example\water\ReminderAppApplication.class
 controller\RequestBody.class
