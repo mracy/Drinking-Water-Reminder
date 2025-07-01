@@ -6,12 +6,14 @@ function WaterApp({ onLogout }) {
   const [amount, setAmount] = useState("");
   const username = localStorage.getItem("username");
 
+  // Ask for notification permission on mount
   useEffect(() => {
     if (Notification.permission !== "granted") {
       Notification.requestPermission();
     }
   }, []);
 
+  // Function to show notification
   const sendNotification = () => {
     if (Notification.permission === "granted") {
       new Notification("💧 Time to drink water!", {
@@ -21,18 +23,25 @@ function WaterApp({ onLogout }) {
     }
   };
 
+  // Schedule notification every 15–25 minutes
   useEffect(() => {
     let timeout;
+
     const scheduleNotification = () => {
-      const delay = Math.floor(Math.random() * (45 - 30 + 1) + 30) * 60 * 1000;
+      const delay = 20 * 60 * 1000; // 
+
       timeout = setTimeout(() => {
         sendNotification();
-        scheduleNotification();
+        scheduleNotification(); // Schedule next notification
       }, delay);
     };
-    scheduleNotification();
+
+    if (username) {
+      scheduleNotification();
+    }
+
     return () => clearTimeout(timeout);
-  }, []);
+  }, [username]);
 
   const fetchLogs = async () => {
     try {
